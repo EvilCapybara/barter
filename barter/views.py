@@ -1,8 +1,8 @@
-from django.http import HttpResponse, HttpResponseForbidden, Http404
+from django.http import HttpResponseForbidden
 from django.shortcuts import redirect, render, get_object_or_404
 from django.core.paginator import Paginator
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
@@ -41,7 +41,7 @@ def register(request):
         form = RegisterForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('home')  # или куда хочешь после регистрации
+            return redirect('home')
     else:
         form = RegisterForm()
     return render(request, 'register.html', {'form': form})
@@ -57,7 +57,7 @@ def create_ad(request):
             ad.owner = request.user
             ad.save()
             messages.success(request, f'Объявление "{form.instance.title}" успешно создано!')
-            return redirect('home')  # или куда хочешь после регистрации return redirect('ad_detail', pk=ad.pk)
+            return redirect('home')
     else:
         form = AdForm
     return render(request, 'create_ad.html', {'form': form})
@@ -78,7 +78,7 @@ def delete_ad(request, pk: int):
     if request.method == 'POST':
         messages.success(request, f'Объявление "{ad.title}" удалено')
         ad.delete()
-        return redirect('home')  # или куда тебе нужно после удаления
+        return redirect('home')
 
     return render(request, 'confirm_delete.html', {'ad': ad})
 
@@ -125,7 +125,7 @@ def search_and_filter_ads(request):
 
     # Получаем уникальные категории из базы
     categories = Ad.objects.values_list('category', flat=True).distinct()
-    # Получаем доступные состояния из choices модели
+    # Получаем возможные состояния из модели
     CONDITION_CHOICES = Ad.CONDITION_CHOICES
 
     return render(request, 'ads_list.html', {
@@ -144,12 +144,12 @@ def create_exchange_offer(request):
         form = ExchangeProposalForm(request.POST)
         if form.is_valid():
             exchange_offer = form.save(commit=False)
-            # Проверяем, что ad_sender_id принадлежит текущему пользователю (защита от поддельных POST-запросов)
+            # проверяем, что ad_sender_id принадлежит текущему пользователю (защита от поддельных POST-запросов)
             if exchange_offer.ad_sender_id.owner != request.user:
                 messages.error(request, "Вы можете отправлять предложения только от своих объявлений")
                 return redirect('ads_list')
 
-            # Можно добавить проверку, чтобы ad_receiver не был объявлением того же пользователя
+            # чтобы ad_receiver не был объявлением того же пользователя
             # (защита от поддельных POST-запросов)
             if exchange_offer.ad_receiver_id.owner == request.user:
                 messages.error(request, "Нельзя отправлять предложение самому себе")
@@ -157,7 +157,7 @@ def create_exchange_offer(request):
 
             exchange_offer.save()
             messages.success(request, "Предложение обмена отправлено!")
-            return redirect('home')  # или return redirect('ad_detail', pk=offer.ad_receiver.pk)
+            return redirect('home')
     else:
         form = ExchangeProposalForm()
         # чтобы предлагать отдать можно было только свои объявления
@@ -176,7 +176,7 @@ def respond_offer(request, offer_id):
         return redirect('my_offers')
 
     if request.method == 'POST':
-        action = request.POST.get('action')  # в html-коде кнопки имеют name='action' и value='accept' например
+        action = request.POST.get('action')  # в html-коде buttons имеют name='action' и value='accept' например
         if action == 'accept':
             offer.status = 'accepted'
             # Тут добавила логику обмена или уведомления
@@ -202,9 +202,6 @@ def filter_offers(request):
     offer_status = request.GET.get('status', '')
 
     my_ads = Ad.objects.filter(owner=request.user)
-
-    sent_offers = ExchangeProposal.objects.none()
-    received_offers = ExchangeProposal.objects.none()
 
     filters_applied = sender_username or receiver_username or offer_status
 

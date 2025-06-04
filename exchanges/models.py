@@ -1,14 +1,8 @@
 from django.db import models
-from users.models import User
 from ads.models import Ad
 
 
 class ExchangeProposal(models.Model):
-    # STATUS_CHOICES = [
-    #     ('pending', 'Ожидает'),
-    #     ('accepted', 'Принято'),
-    #     ('rejected', 'Отклонено'),
-    # ]
 
     class StatusChoices(models.TextChoices):
         PENDING = 'pending', 'Ожидает'

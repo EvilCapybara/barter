@@ -1,6 +1,5 @@
 from django.test import TestCase, Client, override_settings  # в Django используется unittest
 from django.urls import reverse
-from django.http import HttpResponseForbidden
 from django.contrib.auth import get_user_model
 from django.contrib.messages import get_messages
 from ads.models import Ad
