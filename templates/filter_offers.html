@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Фильтрация предложений обмена</title>
+    <style>
+        .filter-form {
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+        .filter-form input,
+        .filter-form select {
+            margin-right: 10px;
+        }
+        .pagination {
+            margin: 15px 0;
+        }
+        .pagination a {
+            margin: 0 4px;
+            text-decoration: none;
+            color: #007bff;
+        }
+        .pagination strong {
+            margin: 0 4px;
+            font-weight: bold;
+        }
+        .pagination span.disabled {
+            margin: 0 4px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <h1>Фильтрация предложений обмена</h1>
+
+    <form method="get" class="filter-form">
+        <label for="sender">Отправитель:</label>
+        <input type="text" name="sender" id="sender" value="{{ sender_username }}">
+
+        <label for="receiver">Получатель:</label>
+        <input type="text" name="receiver" id="receiver" value="{{ receiver_username }}">
+
+        <label for="status">Статус:</label>
+        <select name="status" id="status">
+            <option value="">Все</option>
+            {% for value, display in status_choices %}
+                <option value="{{ value }}" {% if offer_status == value %}selected{% endif %}>{{ display }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Фильтровать</button>
+        <a href="{% url 'my_offers' %}">Сбросить</a>
+    </form>
+
+    <h2>Отправленные предложения</h2>
+    {% if sent_page.object_list %}
+        <ul>
+            {% for offer in sent_page.object_list %}
+                <li>
+                    Вы предложили <strong>{{ offer.ad_receiver_id.owner.username }}</strong>:
+                    «{{ offer.ad_sender_id.title }}» ↔ «{{ offer.ad_receiver_id.title }}»
+                    ({{ offer.get_status_display }})
+                </li>
+            {% endfor %}
+        </ul>
+
+        {% if sent_page.has_other_pages %}
+            <div class="pagination">
+                {% if sent_page.has_previous %}
+                    <a href="?sent_page={{ sent_page.previous_page_number }}&sender={{ sender_username }}&receiver={{ receiver_username }}&status={{ offer_status }}">Назад</a>
+                {% else %}
+                    <span class="disabled">Назад</span>
+                {% endif %}
+
+                {% for i in sent_page.paginator.page_range %}
+                    {% if i == sent_page.number %}
+                        <strong>{{ i }}</strong>
+                    {% else %}
+                        <a href="?sent_page={{ i }}&sender={{ sender_username }}&receiver={{ receiver_username }}&status={{ offer_status }}">{{ i }}</a>
+                    {% endif %}
+                {% endfor %}
+
+                {% if sent_page.has_next %}
+                    <a href="?sent_page={{ sent_page.next_page_number }}&sender={{ sender_username }}&receiver={{ receiver_username }}&status={{ offer_status }}">Вперёд</a>
+                {% else %}
+                    <span class="disabled">Вперёд</span>
+                {% endif %}
+            </div>
+        {% endif %}
+    {% else %}
+        <p>Нет отправленных предложений.</p>
+    {% endif %}
+
+    <h2>Полученные предложения</h2>
+    {% if received_page.object_list %}
+        <ul>
+            {% for offer in received_page.object_list %}
+                <li>
+                    <strong>{{ offer.ad_sender_id.owner.username }}</strong> предлагает:
+                    «{{ offer.ad_sender_id.title }}» ↔ ваше «{{ offer.ad_receiver_id.title }}»
+                    ({{ offer.get_status_display }})
+                </li>
+            {% endfor %}
+        </ul>
+
+        {% if received_page.has_other_pages %}
+            <div class="pagination">
+                {% if received_page.has_previous %}
+                    <a href="?received_page={{ received_page.previous_page_number }}&sender={{ sender_username }}&receiver={{ receiver_username }}&status={{ offer_status }}">Назад</a>
+                {% else %}
+                    <span class="disabled">Назад</span>
+                {% endif %}
+
+                {% for i in received_page.paginator.page_range %}
+                    {% if i == received_page.number %}
+                        <strong>{{ i }}</strong>
+                    {% else %}
+                        <a href="?received_page={{ i }}&sender={{ sender_username }}&receiver={{ receiver_username }}&status={{ offer_status }}">{{ i }}</a>
+                    {% endif %}
+                {% endfor %}
+
+                {% if received_page.has_next %}
+                    <a href="?received_page={{ received_page.next_page_number }}&sender={{ sender_username }}&receiver={{ receiver_username }}&status={{ offer_status }}">Вперёд</a>
+                {% else %}
+                    <span class="disabled">Вперёд</span>
+                {% endif %}
+            </div>
+        {% endif %}
+    {% else %}
+        <p>Нет полученных предложений.</p>
+    {% endif %}
+</body>
+</html>

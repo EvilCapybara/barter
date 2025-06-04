@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Удаление объявления</title>
+    <style>
+        .flash-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            font-size: 16px;
+            z-index: 9999;
+            opacity: 0.95;
+            transition: opacity 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <h1>Удалить "{{ ad.title }}"?</h1>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="flash-message" id="flash-message">
+            {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Да, удалить</button>
+        <a href="{% url 'ad_detail' ad.pk %}">Отмена</a>
+    </form>
+
+    <script>
+        setTimeout(function () {
+            const flash = document.getElementById('flash-message');
+            if (flash) {
+                flash.style.opacity = '0';
+                setTimeout(() => flash.remove(), 500);
+            }
+        }, 3000);
+    </script>
+</body>
+</html>
+

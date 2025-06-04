@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Новое объявление</title>
+    <style>
+        .flash-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4CAF50; /* зелёный — успех */
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            z-index: 1000;
+            opacity: 0.95;
+            transition: opacity 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <h1>Создать объявление</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="flash-message" id="flash-message">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Создать</button>
+    </form>
+
+    <script>
+        // Удалить уведомление через 3 секунды
+        setTimeout(function () {
+            const flash = document.getElementById('flash-message');
+            if (flash) {
+                flash.style.opacity = '0';
+                setTimeout(() => flash.remove(), 500);
+            }
+        }, 3000);
+    </script>
+</body>
+</html>

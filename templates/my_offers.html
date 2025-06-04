@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Мои предложения обмена</title>
+    <style>
+        .flash-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            font-size: 16px;
+            z-index: 9999;
+            opacity: 0.95;
+            transition: opacity 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <h1>Мои предложения обмена</h1>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="flash-message">
+            {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <!-- Форма фильтрации -->
+    <form method="get" style="margin-bottom: 20px;">
+        <label for="sender">Отправитель:</label>
+        <input type="text" name="sender" id="sender" value="{{ request.GET.sender }}" placeholder="Имя пользователя">
+
+        <label for="receiver">Получатель:</label>
+        <input type="text" name="receiver" id="receiver" value="{{ request.GET.receiver }}" placeholder="Имя пользователя">
+
+        <label for="status">Статус:</label>
+        <select name="status" id="status">
+            <option value="">Все</option>
+            {% for value, display in status_choices %}
+                <option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>{{ display }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Фильтровать</button>
+    </form>
+
+    <h2>Отправленные предложения</h2>
+    {% if sent_offers %}
+        <ul>
+            {% for offer in sent_offers %}
+                <li>
+                    Вы предложили обмен пользователю <strong>{{ offer.ad_receiver_id.owner.username }}</strong>:<br>
+                    Ваше объявление — «{{ offer.ad_sender_id.title }}», в обмен на — «{{ offer.ad_receiver_id.title }}»<br>
+                    Статус: {{ offer.get_status_display }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Вы еще не отправляли предложений обмена.</p>
+    {% endif %}
+
+    <h2>Полученные предложения</h2>
+    {% if received_offers %}
+        <ul>
+            {% for offer in received_offers %}
+                <li>
+                    <p><strong>Пользователь {{ offer.ad_sender_id.owner.username }} предложил вам обмен:</strong></p>
+                    <p>Он предлагает «{{ offer.ad_sender_id.title }}» в обмен на ваше объявление «{{ offer.ad_receiver_id.title }}»</p>
+                    <p>Комментарий: {{ offer.comment }}</p>
+                    <p>Статус: {{ offer.get_status_display }}</p>
+
+                    {% if offer.status == 'pending' %}
+                        <form method="post" action="{% url 'respond_offer' offer.offer_id %}">
+                            {% csrf_token %}
+                            <button type="submit" name="action" value="accept">Принять</button>
+                            <button type="submit" name="action" value="reject">Отклонить</button>
+                        </form>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Вам пока не поступали предложения обмена.</p>
+    {% endif %}
+
+    <script>
+        setTimeout(() => {
+            document.querySelectorAll('.flash-message').forEach(flash => {
+                flash.style.opacity = '0';
+                setTimeout(() => flash.remove(), 500);
+            });
+        }, 3000);
+    </script>
+</body>
+</html>

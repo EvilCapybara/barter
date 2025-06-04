@@ -1,0 +1,39 @@
+<form method="get" action="{% url 'ads_list' %}">
+    <input type="text" name="q" placeholder="Поиск" value="{{ query|default:'' }}">
+
+    <select name="category">
+        <option value="">Все категории</option>
+        {% for cat in categories %}
+            <option value="{{ cat }}" {% if category == cat %}selected{% endif %}>{{ cat }}</option>
+        {% endfor %}
+    </select>
+
+    <select name="condition">
+        <option value="">Все состояния</option>
+        {% for key, label in condition_choices %}
+            <option value="{{ key }}" {% if condition == key %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+    </select>
+
+    <button type="submit">Фильтровать</button>
+</form>
+
+<ul>
+    {% for ad in page_obj %}
+        <li><a href="{% url 'ad_detail' ad.pk %}">{{ ad.title }}</a></li>
+    {% empty %}
+        <li>Объявлений не найдено.</li>
+    {% endfor %}
+</ul>
+
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?{% if query %}q={{ query }}&{% endif %}{% if category %}category={{ category }}&{% endif %}{% if condition %}condition={{ condition }}&{% endif %}page={{ page_obj.previous_page_number }}">Назад</a>
+    {% endif %}
+
+    <span>Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+
+    {% if page_obj.has_next %}
+        <a href="?{% if query %}q={{ query }}&{% endif %}{% if category %}category={{ category }}&{% endif %}{% if condition %}condition={{ condition }}&{% endif %}page={{ page_obj.next_page_number }}">Вперёд</a>
+    {% endif %}
+</div>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ ad.title }}</title>
+    <style>
+        .delete-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #e74c3c;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .delete-button:hover {
+            background-color: #c0392b;
+        }
+        .edit-button {
+            display: inline-block;
+            margin-top: 20px;
+            margin-right: 10px;
+            padding: 10px 15px;
+            background-color: #2ecc71;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .edit-button:hover {
+            background-color: #27ae60;
+        }
+
+        .flash-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            font-size: 16px;
+            z-index: 9999;
+            opacity: 0.95;
+            transition: opacity 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="flash-message" id="flash-message">
+            {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <h1>{{ ad.title }}</h1>
+
+    <p><strong>ID:</strong> {{ ad.item_id }}</p>
+    <p><strong>Описание:</strong> {{ ad.description }}</p>
+
+    {% if ad.image_url %}
+        <img src="{{ ad.image_url }}" alt="Фото" width="300">
+    {% endif %}
+
+    <p><strong>Категория:</strong> {{ ad.category }}</p>
+    <p><strong>Состояние:</strong> {{ ad.get_condition_display }}</p>
+    <p><strong>Автор:</strong> {{ ad.owner.username }}</p>
+    <p><strong>Дата публикации:</strong> {{ ad.created_at|date:"d.m.Y H:i" }}</p>
+
+    {% if user == ad.owner %}
+        <a href="{% url 'edit_ad' ad.pk %}" class="edit-button">Редактировать</a>
+        <a href="{% url 'delete_ad' ad.pk %}" class="delete-button">Удалить объявление</a>
+    {% endif %}
+
+    <script>
+        setTimeout(function () {
+            const flash = document.getElementById('flash-message');
+            if (flash) {
+                flash.style.opacity = '0';
+                setTimeout(() => flash.remove(), 500);
+            }
+        }, 3000);
+    </script>
+</body>
+</html>
