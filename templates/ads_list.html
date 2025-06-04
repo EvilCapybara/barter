@@ -1,39 +1,212 @@
-<form method="get" action="{% url 'ads_list' %}">
-    <input type="text" name="q" placeholder="Поиск" value="{{ query|default:'' }}">
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>PyBarter - Объявления</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom right, #f3e6f5, #e0ccff);
+            color: #333;
+        }
 
-    <select name="category">
-        <option value="">Все категории</option>
-        {% for cat in categories %}
-            <option value="{{ cat }}" {% if category == cat %}selected{% endif %}>{{ cat }}</option>
-        {% endfor %}
-    </select>
+        .container {
+            max-width: 700px;
+            margin: 60px auto 80px auto;
+            background-color: white;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
 
-    <select name="condition">
-        <option value="">Все состояния</option>
-        {% for key, label in condition_choices %}
-            <option value="{{ key }}" {% if condition == key %}selected{% endif %}>{{ label }}</option>
-        {% endfor %}
-    </select>
+        .home-button {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 18px;
+            background-color: #c8a2c8;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
 
-    <button type="submit">Фильтровать</button>
-</form>
+        .home-button:hover {
+            background-color: #b58edb;
+        }
 
-<ul>
-    {% for ad in page_obj %}
-        <li><a href="{% url 'ad_detail' ad.pk %}">{{ ad.title }}</a></li>
-    {% empty %}
-        <li>Объявлений не найдено.</li>
-    {% endfor %}
-</ul>
+        h1 {
+            text-align: center;
+            color: #7f5fc3;
+            font-size: 36px;
+            margin-bottom: 30px;
+        }
 
-<div class="pagination">
-    {% if page_obj.has_previous %}
-        <a href="?{% if query %}q={{ query }}&{% endif %}{% if category %}category={{ category }}&{% endif %}{% if condition %}condition={{ condition }}&{% endif %}page={{ page_obj.previous_page_number }}">Назад</a>
-    {% endif %}
+        form.filter-form {
+            margin-bottom: 25px;
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            justify-content: center;
+        }
 
-    <span>Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+        form.filter-form input[type="text"],
+        form.filter-form select {
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+            min-width: 150px;
+        }
 
-    {% if page_obj.has_next %}
-        <a href="?{% if query %}q={{ query }}&{% endif %}{% if category %}category={{ category }}&{% endif %}{% if condition %}condition={{ condition }}&{% endif %}page={{ page_obj.next_page_number }}">Вперёд</a>
-    {% endif %}
-</div>
+        form.filter-form button,
+        form.filter-form a {
+            background-color: #c8a2c8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+            display: inline-block;
+        }
+
+        form.filter-form button:hover,
+        form.filter-form a:hover {
+            background-color: #b58edb;
+            color: white;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 30px;
+        }
+
+        ul li {
+            font-size: 18px;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        ul li a {
+            color: #7f5fc3;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        ul li a:hover {
+            text-decoration: underline;
+            color: #b58edb;
+        }
+
+        .pagination {
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        .pagination a,
+        .pagination strong,
+        .pagination span.disabled {
+            margin: 0 6px;
+            font-size: 16px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .pagination a {
+            background-color: #c8a2c8;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .pagination a:hover {
+            background-color: #b58edb;
+            color: white;
+        }
+
+        .pagination strong {
+            background-color: #7f5fc3;
+            color: white;
+            font-weight: bold;
+        }
+
+        .pagination span.disabled {
+            color: #aaa;
+            background-color: #eee;
+            cursor: default;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{% url 'home' %}" class="home-button">← Домой</a>
+
+        <h1>Объявления</h1>
+
+        <form method="get" action="{% url 'ads_list' %}" class="filter-form">
+            <input type="text" name="q" placeholder="Поиск" value="{{ query|default:'' }}">
+
+            <select name="category">
+                <option value="">Все категории</option>
+                {% for cat in categories %}
+                    <option value="{{ cat }}" {% if category == cat %}selected{% endif %}>{{ cat }}</option>
+                {% endfor %}
+            </select>
+
+            <select name="condition">
+                <option value="">Все состояния</option>
+                {% for key, label in condition_choices %}
+                    <option value="{{ key }}" {% if condition == key %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+
+            <button type="submit">Фильтровать</button>
+            <a href="{% url 'ads_list' %}">Сбросить</a>
+        </form>
+
+        <ul>
+            {% for ad in page_obj %}
+                <li><a href="{% url 'ad_detail' ad.pk %}">{{ ad.title }}</a></li>
+            {% empty %}
+                <li>Объявлений не найдено.</li>
+            {% endfor %}
+        </ul>
+
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if condition %}&condition={{ condition }}{% endif %}">Назад</a>
+            {% else %}
+                <span class="disabled">Назад</span>
+            {% endif %}
+
+            {% for i in page_obj.paginator.page_range %}
+                {% if i == page_obj.number %}
+                    <strong>{{ i }}</strong>
+                {% else %}
+                    <a href="?page={{ i }}{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if condition %}&condition={{ condition }}{% endif %}">{{ i }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if condition %}&condition={{ condition }}{% endif %}">Вперёд</a>
+            {% else %}
+                <span class="disabled">Вперёд</span>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

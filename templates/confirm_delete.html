@@ -3,6 +3,63 @@
 <head>
     <title>Удаление объявления</title>
     <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom right, #f3e6f5, #e0ccff);
+            color: #333;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #7f5fc3;
+            font-size: 28px;
+            margin-bottom: 30px;
+        }
+
+        .delete-container {
+            max-width: 480px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+            text-align: center;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        button[type="submit"] {
+            background-color: #e57373;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-right: 15px;
+            transition: background 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #d84343;
+        }
+
+        .cancel-link {
+            text-decoration: none;
+            color: #7f5fc3;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .cancel-link:hover {
+            text-decoration: underline;
+        }
+
         .flash-message {
             position: fixed;
             top: 20px;
@@ -20,21 +77,23 @@
     </style>
 </head>
 <body>
-    <h1>Удалить "{{ ad.title }}"?</h1>
+    <div class="delete-container">
+        <h1>Удалить "{{ ad.title }}"?</h1>
 
-    {% if messages %}
-      {% for message in messages %}
-        <div class="flash-message" id="flash-message">
-            {{ message }}
-        </div>
-      {% endfor %}
-    {% endif %}
+        {% if messages %}
+          {% for message in messages %}
+            <div class="flash-message" id="flash-message">
+                {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
 
-    <form method="post">
-        {% csrf_token %}
-        <button type="submit">Да, удалить</button>
-        <a href="{% url 'ad_detail' ad.pk %}">Отмена</a>
-    </form>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit">Да, удалить</button>
+            <a href="{% url 'ad_detail' ad.pk %}" class="cancel-link">Отмена</a>
+        </form>
+    </div>
 
     <script>
         setTimeout(function () {
@@ -47,4 +106,3 @@
     </script>
 </body>
 </html>
-

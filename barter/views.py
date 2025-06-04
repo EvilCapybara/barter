@@ -31,6 +31,11 @@ def user_login(request):
     return render(request, 'login.html', {'form': form})
 
 
+def user_logout(request):
+    logout(request)
+    return redirect('home')
+
+
 def register(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
@@ -114,7 +119,7 @@ def search_and_filter_ads(request):
     if condition:
         ads = ads.filter(condition=condition)
 
-    paginator = Paginator(object_list=ads, per_page=2)  # ads.order_by('-created_at')
+    paginator = Paginator(object_list=ads, per_page=1)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -159,20 +164,6 @@ def create_exchange_offer(request):
         form.fields['ad_sender_id'].queryset = Ad.objects.filter(owner=request.user)
         form.fields['ad_receiver_id'].queryset = Ad.objects.exclude(owner=request.user)
     return render(request, 'exchange_offer.html', {'form': form})
-
-
-# @login_required
-# def my_offers(request):
-#     my_ads = Ad.objects.filter(owner=request.user)  # или лучше user_ads?
-#
-#     # не доступ к полям, а указание Django ORM, как сформировать SQL-запрос
-#     sent_offers = ExchangeOffer.objects.filter(ad_sender_id__owner=request.user)
-#     received_offers = ExchangeOffer.objects.filter(ad_receiver_id__in=my_ads)
-#
-#     return render(request, 'my_offers.html', {
-#         'sent_offers': sent_offers,
-#         'received_offers': received_offers,
-#     })
 
 
 @login_required

@@ -1,39 +1,86 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <title>{{ ad.title }}</title>
+    <meta charset="UTF-8" />
+    <title>{{ ad.title }} — PyBarter</title>
     <style>
-        .delete-button {
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom right, #f3e6f5, #e0ccff);
+            color: #333;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            background-color: white;
+            margin: 0 auto;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        h1 {
+            color: #7f5fc3;
+            font-size: 36px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        p {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+
+        strong {
+            color: #7f5fc3;
+        }
+
+        img {
+            display: block;
+            margin: 25px auto;
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(127, 95, 195, 0.3);
+        }
+
+        .btn {
             display: inline-block;
-            margin-top: 20px;
-            padding: 10px 15px;
-            background-color: #e74c3c;
-            color: white;
+            margin-top: 25px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
             text-decoration: none;
-            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            color: white;
+            user-select: none;
         }
-        .delete-button:hover {
-            background-color: #c0392b;
-        }
+
         .edit-button {
-            display: inline-block;
-            margin-top: 20px;
-            margin-right: 10px;
-            padding: 10px 15px;
-            background-color: #2ecc71;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
+            background-color: #a57fcc;
+            margin-right: 15px;
         }
+
         .edit-button:hover {
-            background-color: #27ae60;
+            background-color: #7f5fc3;
+        }
+
+        .delete-button {
+            background-color: #e573b3;
+        }
+
+        .delete-button:hover {
+            background-color: #d14f9f;
         }
 
         .flash-message {
             position: fixed;
             top: 20px;
             right: 20px;
-            background-color: #4CAF50;
+            background-color: #7f5fc3;
             color: white;
             padding: 15px 25px;
             border-radius: 8px;
@@ -46,33 +93,34 @@
     </style>
 </head>
 <body>
+    <div class="container">
+        {% if messages %}
+          {% for message in messages %}
+            <div class="flash-message" id="flash-message">
+                {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
 
-    {% if messages %}
-      {% for message in messages %}
-        <div class="flash-message" id="flash-message">
-            {{ message }}
-        </div>
-      {% endfor %}
-    {% endif %}
+        <h1>{{ ad.title }}</h1>
 
-    <h1>{{ ad.title }}</h1>
+        <p><strong>ID:</strong> {{ ad.item_id }}</p>
+        <p><strong>Описание:</strong> {{ ad.description }}</p>
 
-    <p><strong>ID:</strong> {{ ad.item_id }}</p>
-    <p><strong>Описание:</strong> {{ ad.description }}</p>
+        {% if ad.image_url %}
+            <img src="{{ ad.image_url }}" alt="Фото объявления">
+        {% endif %}
 
-    {% if ad.image_url %}
-        <img src="{{ ad.image_url }}" alt="Фото" width="300">
-    {% endif %}
+        <p><strong>Категория:</strong> {{ ad.category }}</p>
+        <p><strong>Состояние:</strong> {{ ad.get_condition_display }}</p>
+        <p><strong>Автор:</strong> {{ ad.owner.username }}</p>
+        <p><strong>Дата публикации:</strong> {{ ad.created_at|date:"d.m.Y H:i" }}</p>
 
-    <p><strong>Категория:</strong> {{ ad.category }}</p>
-    <p><strong>Состояние:</strong> {{ ad.get_condition_display }}</p>
-    <p><strong>Автор:</strong> {{ ad.owner.username }}</p>
-    <p><strong>Дата публикации:</strong> {{ ad.created_at|date:"d.m.Y H:i" }}</p>
-
-    {% if user == ad.owner %}
-        <a href="{% url 'edit_ad' ad.pk %}" class="edit-button">Редактировать</a>
-        <a href="{% url 'delete_ad' ad.pk %}" class="delete-button">Удалить объявление</a>
-    {% endif %}
+        {% if user == ad.owner %}
+            <a href="{% url 'edit_ad' ad.pk %}" class="btn edit-button">Редактировать</a>
+            <a href="{% url 'delete_ad' ad.pk %}" class="btn delete-button">Удалить объявление</a>
+        {% endif %}
+    </div>
 
     <script>
         setTimeout(function () {

@@ -1,70 +1,156 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8" />
-    <title>Мои предложения обмена</title>
+    <meta charset="UTF-8">
+    <title>Создать предложение обмена</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        h1, h2 { color: #333; }
-        ul { list-style: none; padding-left: 0; }
-        li { margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
-        button { margin-right: 10px; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; }
-        button.accept { background-color: #4CAF50; color: white; }
-        button.reject { background-color: #e74c3c; color: white; }
-        .status { font-weight: bold; }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom right, #f3e6f5, #e0ccff);
+            margin: 0;
+            padding: 40px 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px 35px;
+            border-radius: 12px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        h1 {
+            text-align: center;
+            color: #7f5fc3;
+            font-size: 30px;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-top: 18px;
+            font-weight: bold;
+            color: #444;
+        }
+
+        select,
+        textarea,
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px 12px;
+            margin-top: 6px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        input[type="submit"] {
+            margin-top: 25px;
+            background-color: #c8a2c8;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #b58edb;
+        }
+
+        .form-error {
+            color: red;
+            font-size: 0.9em;
+            margin-top: 6px;
+        }
+
+        .message {
+            max-width: 600px;
+            margin: 10px auto;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .home-link {
+            display: inline-block;
+            margin-top: 20px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .home-link a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #c8a2c8;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .home-link a:hover {
+            background-color: #b58edb;
+        }
     </style>
 </head>
 <body>
-    <h1>Мои предложения обмена</h1>
 
-    <h2>Вы отправили:</h2>
-    <ul>
-        {% for offer in sent_offers %}
-            <li>
-                Ваше объявление: <strong>{{ offer.ad_sender_id.title }}</strong><br>
-                Предложено за: <strong>{{ offer.ad_receiver_id.title }}</strong><br>
-                Статус: <span class="status">{{ offer.get_status_display }}</span><br>
-                Комментарий: {{ offer.comment }}
-            </li>
-        {% empty %}
-            <li>Вы пока не отправляли предложений.</li>
-        {% endfor %}
-    </ul>
+    <div class="container">
+        <h1>Создать предложение обмена</h1>
 
-    <h2>Вам предложили:</h2>
-    <ul>
-        {% for offer in received_offers %}
-            <li>
-                Вам предложили <strong>{{ offer.ad_sender_id.title }}</strong>
-                за ваше <strong>{{ offer.ad_receiver_id.title }}</strong><br>
-                Статус: <span class="status">{{ offer.get_status_display }}</span><br>
-                Комментарий: {{ offer.comment }}<br>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
 
-                {% if offer.status == 'pending' %}
-                    <form method="post" action="{% url 'respond_offer' offer.offer_id %}" style="display:inline;">
-                        {% csrf_token %}
-                        <button type="submit" name="action" value="accept" class="accept">Принять</button>
-                    </form>
-                    <form method="post" action="{% url 'respond_offer' offer.offer_id %}" style="display:inline;">
-                        {% csrf_token %}
-                        <button type="submit" name="action" value="reject" class="reject">Отклонить</button>
-                    </form>
-                {% endif %}
-            </li>
-        {% empty %}
-            <li>Вам пока не поступало предложений.</li>
-        {% endfor %}
-    </ul>
+        <form method="post">
+            {% csrf_token %}
 
-    <!-- Опционально: добавьте флеш-сообщения, если используете messages -->
-    {% if messages %}
-      <ul>
-        {% for message in messages %}
-          <li style="color: {% if message.tags == 'error' %}red{% else %}green{% endif %};">
-            {{ message }}
-          </li>
-        {% endfor %}
-      </ul>
-    {% endif %}
+            <label for="{{ form.ad_sender_id.id_for_label }}">{{ form.ad_sender_id.label }}</label>
+            {{ form.ad_sender_id }}
+            {% if form.ad_sender_id.errors %}
+                <div class="form-error">{{ form.ad_sender_id.errors }}</div>
+            {% endif %}
+
+            <label for="{{ form.ad_receiver_id.id_for_label }}">{{ form.ad_receiver_id.label }}</label>
+            {{ form.ad_receiver_id }}
+            {% if form.ad_receiver_id.errors %}
+                <div class="form-error">{{ form.ad_receiver_id.errors }}</div>
+            {% endif %}
+
+            <label for="{{ form.comment.id_for_label }}">{{ form.comment.label }}</label>
+            {{ form.comment }}
+            {% if form.comment.errors %}
+                <div class="form-error">{{ form.comment.errors }}</div>
+            {% endif %}
+
+            <input type="submit" value="Отправить предложение">
+        </form>
+
+        <div class="home-link">
+            <a href="{% url 'home' %}">← На главную</a>
+        </div>
+    </div>
+
 </body>
 </html>

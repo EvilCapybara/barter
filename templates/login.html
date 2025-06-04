@@ -1,14 +1,90 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Вход</title>
+    <title>PyBarter - Авторизация</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom right, #f3e6f5, #e0ccff);
+            color: #333;
+        }
+
+        .login-container {
+            max-width: 400px;
+            margin: 120px auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            font-size: 32px;
+            color: #7f5fc3;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            padding: 10px 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        button[type="submit"] {
+            background-color: #c8a2c8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #b58edb;
+        }
+
+        .register-link {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .register-link a {
+            color: #7f5fc3;
+            text-decoration: none;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <h1>Вход</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Войти</button>
-    </form>
+    <div class="login-container">
+        <h1>Вход</h1>
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Войти</button>
+        </form>
+
+        <div class="register-link">
+            Нет аккаунта? <a href="{% url 'register' %}">Зарегистрироваться</a>
+        </div>
+    </div>
 </body>
 </html>
