@@ -30,11 +30,44 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: Project Setup
+        run: |
+          python manage.py runserver
+
       - name: Run Claude Code
         id: claude
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+
+          custom_instructions: |
+            The project is already set up with all dependencies installed.
+            The server is already running at localhost:8000.
+            If needed, use the mcp__playwright set of tools to launch a browser and interact with the app.
+
+          mcp_config: |
+            {
+              "mcpServers": {
+                "playwright": {
+                  "type": "stdio",
+                  "command": "npx",
+                  "args": [
+                    "@playwright/mcp@latest",
+                    "--allowed-origins",
+                    "localhost:8000"
+                  ],
+                  "env": {}
+                }
+              }
+            }
+
+          allowed_tools: |
+            Bash(pytest:*),
+            Bash(python:*),
+            Bash(git:*),
+            mcp__playwright__browser_snapshot,
+            mcp__playwright__take_snapshot,
+            mcp__playwright__browser_click
 
           # This is an optional setting that allows Claude to read CI results on PRs
           additional_permissions: |
