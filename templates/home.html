@@ -6,6 +6,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PyBarter{% if lang == 'en' %} - Home{% else %} - Главная{% endif %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { box-sizing: border-box; }
 
@@ -114,6 +117,7 @@
         }
 
         .hero h1 {
+            font-family: 'Playfair Display', Georgia, serif;
             font-size: clamp(26px, 5vw, 42px);
             line-height: 1.25;
             margin-bottom: 12px;
@@ -140,6 +144,32 @@
             font-size: 15px;
             border-radius: 10px;
             box-shadow: 0 3px 10px rgba(127, 95, 195, 0.18);
+            background-color: transparent;
+            background-size: 200% auto;
+            transition: background-position 0.4s ease, transform 0.1s ease, box-shadow 0.25s ease;
+        }
+
+        .action-grid .btn:hover {
+            background-color: transparent;
+            background-position: right center;
+            box-shadow: 0 6px 18px rgba(127, 95, 195, 0.32);
+            transform: translateY(-2px);
+        }
+
+        .action-grid .btn:nth-child(1) {
+            background-image: linear-gradient(to right, #c8a2c8, #9b6fd4, #c8a2c8);
+        }
+
+        .action-grid .btn:nth-child(2) {
+            background-image: linear-gradient(to right, #a78fd4, #6fa3d4, #a78fd4);
+        }
+
+        .action-grid .btn:nth-child(3) {
+            background-image: linear-gradient(to right, #d48fa8, #9b6fd4, #d48fa8);
+        }
+
+        .action-grid .btn:nth-child(4) {
+            background-image: linear-gradient(to right, #7f7fd4, #b06fd4, #7f7fd4);
         }
 
         /* ── Flash message ── */
