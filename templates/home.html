@@ -1,92 +1,207 @@
+{% load i18n %}
+{% get_current_language as lang %}
 <!DOCTYPE html>
-<html>
+<html lang="{{ lang }}">
 <head>
-    <title>PyBarter - Главная</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PyBarter{% if lang == 'en' %} - Home{% else %} - Главная{% endif %}</title>
     <style>
+        *, *::before, *::after { box-sizing: border-box; }
+
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background: linear-gradient(to bottom right, #f3e6f5, #e0ccff); /* Лавандовый фон */
+            background: linear-gradient(135deg, #f3e6f5 0%, #e0ccff 100%);
             color: #333;
+            min-height: 100vh;
         }
 
+        /* ── Navbar ── */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 28px;
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(6px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .navbar-brand {
+            font-size: 20px;
+            font-weight: bold;
+            color: #7f5fc3;
+            text-decoration: none;
+            letter-spacing: -0.3px;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* ── Shared button / link-button style ── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            background-color: #c8a2c8;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.25s ease, transform 0.1s ease;
+        }
+
+        .btn:hover {
+            background-color: #b58edb;
+            transform: translateY(-1px);
+        }
+
+        .btn:active { transform: translateY(0); }
+
+        /* ── Language switcher ── */
+        .lang-switcher {
+            display: flex;
+            align-items: center;
+            background: rgba(200, 162, 200, 0.18);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1.5px solid #c8a2c8;
+        }
+
+        .lang-switcher form {
+            display: contents;
+        }
+
+        .lang-btn {
+            padding: 5px 12px;
+            font-size: 13px;
+            font-weight: bold;
+            background: transparent;
+            border: none;
+            color: #7f5fc3;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            border-radius: 0;
+        }
+
+        .lang-btn:hover { background: rgba(200, 162, 200, 0.35); }
+
+        .lang-btn.active {
+            background: #c8a2c8;
+            color: white;
+        }
+
+        .lang-divider {
+            width: 1px;
+            height: 18px;
+            background: #c8a2c8;
+        }
+
+        /* ── Hero section ── */
+        .hero {
+            max-width: 700px;
+            margin: 80px auto 0;
+            padding: 0 24px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: clamp(26px, 5vw, 42px);
+            line-height: 1.25;
+            margin-bottom: 12px;
+            color: #2d1b4e;
+        }
+
+        .hero p {
+            font-size: 16px;
+            color: #6b5b8a;
+            margin-bottom: 48px;
+        }
+
+        /* ── Action button grid ── */
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        .action-grid .btn {
+            padding: 14px 20px;
+            font-size: 15px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(127, 95, 195, 0.18);
+        }
+
+        /* ── Flash message ── */
         .flash-message {
             position: fixed;
             top: 20px;
             right: 20px;
             background-color: #7f5fc3;
             color: white;
-            padding: 15px 25px;
+            padding: 14px 22px;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            font-size: 16px;
+            font-size: 15px;
             z-index: 9999;
             opacity: 0.95;
             transition: opacity 0.5s ease;
         }
 
-        .top-right-buttons {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-        }
-
-        .top-right-buttons a {
-            background-color: #c8a2c8;
-            color: white;
-            padding: 8px 14px;
-            margin-left: 10px;
-            border: none;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: background 0.3s ease;
-        }
-
-        .top-right-buttons a:hover {
-            background-color: #b58edb;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 100px auto;
-            text-align: center;
-        }
-
-        h1 {
-            font-size: 48px;
-            margin-bottom: 40px;
-        }
-
-        .main-buttons a {
-            display: inline-block;
-            margin: 10px;
-            padding: 12px 24px;
-            background-color: #c8a2c8;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: background 0.3s ease;
-        }
-
-        .main-buttons a:hover {
-            background-color: #b58edb;
+        @media (max-width: 480px) {
+            .action-grid { grid-template-columns: 1fr; }
+            .hero { margin-top: 48px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="top-right-buttons">
-        {% if user.is_authenticated %}
-            <a href="{% url 'logout' %}">Выйти</a>
-        {% else %}
-            <a href="{% url 'login' %}">Войти</a>
-            <a href="{% url 'register' %}">Зарегистрироваться</a>
-        {% endif %}
-    </div>
+    <nav class="navbar">
+        <a class="navbar-brand" href="{% url 'home' %}">PyBarter</a>
+
+        <div class="navbar-right">
+            <!-- Language switcher -->
+            <div class="lang-switcher" role="group" aria-label="Language">
+                <form method="post" action="{% url 'set_language' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <input type="hidden" name="language" value="ru">
+                    <button type="submit" class="lang-btn {% if lang == 'ru' %}active{% endif %}">RU</button>
+                </form>
+                <div class="lang-divider"></div>
+                <form method="post" action="{% url 'set_language' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <input type="hidden" name="language" value="en">
+                    <button type="submit" class="lang-btn {% if lang == 'en' %}active{% endif %}">EN</button>
+                </form>
+            </div>
+
+            <!-- Auth links -->
+            {% if user.is_authenticated %}
+                <a class="btn" href="{% url 'logout' %}">
+                    {% if lang == 'en' %}Log out{% else %}Выйти{% endif %}
+                </a>
+            {% else %}
+                <a class="btn" href="{% url 'login' %}">
+                    {% if lang == 'en' %}Log in{% else %}Войти{% endif %}
+                </a>
+                <a class="btn" href="{% url 'register' %}">
+                    {% if lang == 'en' %}Register{% else %}Зарегистрироваться{% endif %}
+                </a>
+            {% endif %}
+        </div>
+    </nav>
 
     {% if messages %}
         {% for message in messages %}
@@ -94,15 +209,37 @@
         {% endfor %}
     {% endif %}
 
-    <div class="container">
-        <h1>Добро пожаловать на PyBarter - платформу для обмена вещами!</h1>
-        <div class="main-buttons">
-            <a href="{% url 'create_ad' %}">Создать объявление</a>
-            <a href="{% url 'ads_list' %}">Смотреть все объявления</a>
-            <a href="{% url 'create_exchange_offer' %}">Предложить обмен</a>
-            <a href="{% url 'my_offers' %}">Мои предложения обмена</a>
+    <section class="hero">
+        <h1>
+            {% if lang == 'en' %}
+                Welcome to PyBarter — your platform for trading goods!
+            {% else %}
+                Добро пожаловать на PyBarter — платформу для обмена вещами!
+            {% endif %}
+        </h1>
+        <p>
+            {% if lang == 'en' %}
+                Post an ad, browse listings, or propose a trade.
+            {% else %}
+                Разместите объявление, просматривайте предложения или предложите обмен.
+            {% endif %}
+        </p>
+
+        <div class="action-grid">
+            <a class="btn" href="{% url 'create_ad' %}">
+                {% if lang == 'en' %}Post an ad{% else %}Создать объявление{% endif %}
+            </a>
+            <a class="btn" href="{% url 'ads_list' %}">
+                {% if lang == 'en' %}Browse ads{% else %}Все объявления{% endif %}
+            </a>
+            <a class="btn" href="{% url 'create_exchange_offer' %}">
+                {% if lang == 'en' %}Propose a trade{% else %}Предложить обмен{% endif %}
+            </a>
+            <a class="btn" href="{% url 'my_offers' %}">
+                {% if lang == 'en' %}My offers{% else %}Мои предложения{% endif %}
+            </a>
         </div>
-    </div>
+    </section>
 
     <script>
         setTimeout(function () {

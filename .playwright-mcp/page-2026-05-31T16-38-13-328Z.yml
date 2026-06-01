@@ -1,0 +1,17 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - link "Войти" [ref=e3] [cursor=pointer]:
+      - /url: /login/
+    - link "Зарегистрироваться" [ref=e4] [cursor=pointer]:
+      - /url: /register/
+  - generic [ref=e5]:
+    - heading "Добро пожаловать на PyBarter - платформу для обмена вещами!" [level=1] [ref=e6]
+    - generic [ref=e7]:
+      - link "Создать объявление" [ref=e8] [cursor=pointer]:
+        - /url: /ads/create/
+      - link "Смотреть все объявления" [ref=e9] [cursor=pointer]:
+        - /url: /ads/
+      - link "Предложить обмен" [ref=e10] [cursor=pointer]:
+        - /url: /exchange/create/
+      - link "Мои предложения обмена" [ref=e11] [cursor=pointer]:
+        - /url: /exchange/my_offers/
