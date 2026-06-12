@@ -1,0 +1,27 @@
+- generic [ref=e2]:
+  - heading "Регистрация" [level=1] [ref=e3]
+  - generic [ref=e4]:
+    - paragraph [ref=e5]:
+      - text: "Username:"
+      - textbox "Username:" [active] [ref=e6]
+    - paragraph [ref=e7]:
+      - text: "Email:"
+      - textbox "Email:" [ref=e8]
+    - paragraph [ref=e9]:
+      - text: "Password:"
+      - textbox "Password:" [ref=e10]
+    - list [ref=e11]:
+      - listitem [ref=e12]: Your password can’t be too similar to your other personal information.
+      - listitem [ref=e13]: Your password must contain at least 8 characters.
+      - listitem [ref=e14]: Your password can’t be a commonly used password.
+      - listitem [ref=e15]: Your password can’t be entirely numeric.
+    - paragraph
+    - paragraph [ref=e16]:
+      - text: "Password confirmation:"
+      - textbox "Password confirmation:" [ref=e17]
+      - text: Enter the same password as before, for verification.
+    - button "Зарегистрироваться" [ref=e18] [cursor=pointer]
+  - generic [ref=e19]:
+    - text: Уже есть аккаунт?
+    - link "Войти" [ref=e20] [cursor=pointer]:
+      - /url: /login/
